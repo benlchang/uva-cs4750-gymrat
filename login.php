@@ -14,9 +14,18 @@ require('request-db.php');
 ?>
 
 <?php 
+$confirmation_message = ''; // Initialize a variable to hold the confirmation text
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  
 {
-
+    if (!empty($_POST['loginBtn'])) {
+        header('Location: dashboard.php');
+        exit; 
+    }
+    if (isset($_POST['createBtn'])) {
+        header('Location: createAccount.php');
+        exit; 
+    }
 }
 ?>
 
@@ -58,49 +67,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
-    <form method="post" action="<?php $_SERVER['PHP_SELF'] ?>" onsubmit="return validateInput()">
-        <div id="loginView" class="w-full max-w-xs md:max-w-sm p-6 bg-blue-300 border-2 border-black rounded-lg shadow-2xl">
-            <h1 class="text-white text-center text-3xl font-bold mb-8 pt-4">Login</h1>
-            <form id="loginForm" class="space-y-6" onsubmit="handleFormSubmission(event)">
-                <div class="raised-element bg-blue-400 p-3 rounded-md">
-                    <label for="computingId" class="sr-only">Computing ID</label>
-                        <input type="text" 
-                            id="computingId" 
-                            placeholder="Computing ID" 
+    <div class="w-full max-w-xs md:max-w-sm p-6 bg-blue-300 border-2 border-black rounded-lg shadow-2xl">
+        <form method="post" action="<?php $_SERVER['PHP_SELF'] ?>" onsubmit="return validateInput()">
+            <div id="loginView" class="w-full max-w-xs md:max-w-sm p-6 bg-blue-300 border-2 border-black rounded-lg shadow-2xl">
+                <h1 class="text-white text-center text-3xl font-bold mb-8 pt-4">Login</h1>
+                <form id="loginForm" class="space-y-6" onsubmit="handleFormSubmission(event)">
+                    <div class="raised-element bg-blue-400 p-3 rounded-md">
+                        <label for="computingId" class="sr-only">Computing ID</label>
+                            <input type="text" 
+                                id="computingId" 
+                                placeholder="Computing ID" 
+                                required 
+                                class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
+                            >
+                    </div>
+                    <div class="raised-element bg-blue-400 p-3 rounded-md">
+                        <label for="password" class="sr-only">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="Password" 
                             required 
                             class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
                         >
-                </div>
-                <div class="raised-element bg-blue-400 p-3 rounded-md">
-                    <label for="password" class="sr-only">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        placeholder="Password" 
-                        required 
-                        class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
-                    >
-                </div>
-                <form action="request.php" method="post">
-                    <input type="submit" value="Create Account"
-                        name="createAccountBtn" class="button-hover w-full raised-element bg-blue-500 text-white font-bold py-3 px-4 rounded-md text-xl tracking-wider transition-all duration-150"
-                        title="Click to create your account"
+                    </div>
+                    <input type="submit" value="Login" id="loginBtn"
+                        name="loginBtn" class="button-hover w-full raised-element bg-blue-500 text-white font-bold py-3 px-4 rounded-md text-xl tracking-wider transition-all duration-150"
+                        title="Click to login to your account"
                     />
                 </form>
-            </form>
-            <div class="text-center mt-8 mb-4">
-                <span class="text-white text-sm">Or Create Account Using</span>
+
+                <div id="messageBox" class="mt-6 p-3 bg-green-100 border border-green-400 text-green-700 rounded hidden" role="alert">
+                    <p id="messageText"></p>
+                </div>
             </div>
-            <button 
-                onclick="handleSignUp()"
-                class="button-hover w-full raised-element bg-blue-500 text-white font-bold py-3 px-4 rounded-md text-xl tracking-wider transition-all duration-150"
-            >
-            Create Account
-            </button>
-            <div id="messageBox" class="mt-6 p-3 bg-green-100 border border-green-400 text-green-700 rounded hidden" role="alert">
-                <p id="messageText"></p>
-            </div>
+        </form>
+        <div class="text-center mt-8 mb-4">
+            <span class="text-white text-sm">Or Create Account Using</span>
         </div>
-    </form>
+        <form method="POST" action="login.php" class="mt-4">
+                <button 
+                    type="submit" 
+                    name="createBtn"
+                    class="button-hover w-full raised-element bg-blue-500 text-white font-bold py-3 px-4 rounded-md text-xl tracking-wider transition-all duration-150 text-center block no-underline"
+                >
+                    Sign Up
+                </button>
+        </form>
+    </div>
 </body>
 </html>
