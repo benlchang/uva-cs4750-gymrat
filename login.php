@@ -15,11 +15,14 @@ require('request-db.php');
 
 <?php 
 $confirmation_message = ''; // Initialize a variable to hold the confirmation text
-
+$account_id = null;
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  
 {
     if (!empty($_POST['loginBtn'])) {
-        header('Location: dashboard.php');
+        $account_id = getAccount($_POST['computingId'], $_POST['password']);
+        if ($account_id != null ) {
+            header('Location: dashboard.php');
+        }
         exit; 
     }
     if (isset($_POST['createBtn'])) {
@@ -76,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
                         <label for="computingId" class="sr-only">Computing ID</label>
                             <input type="text" 
                                 id="computingId" 
+                                name="computingId"
                                 placeholder="Computing ID" 
                                 required 
                                 class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
@@ -86,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
                         <input 
                             type="password" 
                             id="password" 
+                            name="password"
                             placeholder="Password" 
                             required 
                             class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"

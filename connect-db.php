@@ -33,7 +33,7 @@
 $username = 'web';
 $password = 'YES';
 $host = 'localhost:3306';
-$dbname = 'POTD5';    // voting_system
+$dbname = 'gymrat';    // voting_system
 $dsn = "mysql:host=$host;dbname=$dbname";  
 ////////////////////////////////////////////
 
