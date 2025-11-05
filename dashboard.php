@@ -8,15 +8,24 @@
 ?>
 
 <?php 
+session_start();
 require('connect-db.php');         // include() 
 require('request-db.php');
 
 ?>
 
 <?php 
-if ($_SERVER['REQUEST_METHOD'] == 'POST')  
+$name = 'test';
+if (isset($_SESSION['user_id'])) 
 {
-
+    $displayName = getNameByID($_SESSION['user_id']);
+    if ($displayName) {
+        // If the database returns a name, use it
+        $name = $displayName ? htmlspecialchars($displayName['user_name']) : 'Guest';
+    } else {
+        // Fallback: If the lookup fails for some reason, use the stored ID as the name
+        $name = $_SESSION['user_id'];
+    }
 }
 ?>
 
@@ -63,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 <body class="bg-white min-h-screen p-4 sm:p-8 font-sans">
     <div class="max-w-7xl mx-auto">
     <header class="mb-8">
-            <h1 class="text-5xl font-extrabold page-text">Good Day, USERNAME</h1>
+            <h1 class="text-5xl font-extrabold page-text">Good Day, <?php echo htmlspecialchars($name); ?></h1>
             <p class="text-lg text-gray-700 mt-1">Track your daily activity</p>
         </header>
         <div class="flex flex-col lg:flex-row gap-8">

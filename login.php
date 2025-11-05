@@ -14,6 +14,7 @@ require('request-db.php');
 ?>
 
 <?php 
+session_start();
 $confirmation_message = ''; // Initialize a variable to hold the confirmation text
 $account_id = null;
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  
@@ -21,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     if (!empty($_POST['loginBtn'])) {
         $account_id = getAccount($_POST['computingId'], $_POST['password']);
         if ($account_id != null ) {
+            $_SESSION['user_id'] = $account_id;
             header('Location: dashboard.php');
         }
         exit; 
@@ -74,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         <form method="post" action="<?php $_SERVER['PHP_SELF'] ?>" onsubmit="return validateInput()">
             <div id="loginView" class="w-full max-w-xs md:max-w-sm p-6 bg-blue-300 border-2 border-black rounded-lg shadow-2xl">
                 <h1 class="text-white text-center text-3xl font-bold mb-8 pt-4">Login</h1>
-                <form id="loginForm" class="space-y-6" onsubmit="handleFormSubmission(event)">
+                <form id="loginForm" class="space-y-6">
                     <div class="raised-element bg-blue-400 p-3 rounded-md">
                         <label for="computingId" class="sr-only">Computing ID</label>
                             <input type="text" 
