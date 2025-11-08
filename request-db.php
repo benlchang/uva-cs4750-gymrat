@@ -50,7 +50,14 @@ function getNameByID($user_id)
 function createAccount($computingId, $password, $f_name, $l_name, $year)
 {
     global $db;
-    $query = "INSERT INTO USERS (COMP_ID, PASSWORD, F_NAME, L_NAME, YEAR) VALUES (:computingId, :password, :f_name, :l_name, :year)";
+    $query = "
+        INSERT INTO USERS (COMP_ID, `PASSWORD`, F_NAME, L_NAME, YEAR)
+        SELECT :computingId, :password, :f_name, :l_name, :year
+        FROM DUAL
+        WHERE NOT EXISTS (
+            SELECT 1 FROM USERS WHERE COMP_ID = :computingId
+        )
+    ";    
     try {
         // bad way
         $stmt = $db->prepare($query);

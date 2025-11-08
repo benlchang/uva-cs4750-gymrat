@@ -23,8 +23,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     if (!empty($_POST['createAccountBtn']))
     {
       if (!($_POST['computingId'] == '' || $_POST['password'] == '' || $_POST['fName'] == '' || $_POST['lName'] == '' || $_POST['year'] == '')) {
-        createAccount($_POST['computingId'], $_POST['password'], $_POST['fName'], $_POST['lName'], $_POST['year']);
-        echo "<p> Account Created! </p>";
+        $result = createAccount($_POST['computingId'], $_POST['password'], $_POST['fName'], $_POST['lName'], $_POST['year']);
+
+        if ($result) {
+            $alert = '<p class="text-green-700 font-semibold">✅ Account created successfully!</p>';        
+        } 
+        else {
+            $alert = '<p class="text-red-700 font-semibold">❌ Account already exists! Please choose another Computing ID.</p>';
+        }
       }
     }
 }
@@ -72,6 +78,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         <form method="post" action="<?php $_SERVER['PHP_SELF'] ?>" onsubmit="return validateInput()">
             <div id="loginView" class="w-full max-w-xs md:max-w-sm p-6 bg-blue-300 border-2 border-black rounded-lg shadow-2xl">
                 <h1 class="text-white text-center text-3xl font-bold mb-8 pt-4">Sign Up</h1>
+                <?php if (!empty($alert)) : ?>
+                    <div class="mb-4 bg-white p-3 text-center rounded shadow">
+                        <?= $alert ?>
+                    </div>
+                <?php endif; ?>
                 <form id="loginForm" class="space-y-6">
                     <div class="raised-element bg-blue-400 p-3 rounded-md">
                         <label for="computingId" class="sr-only">Computing ID</label>
