@@ -20,6 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         header('Location: login.php');
         exit; 
     }
+    if (!empty($_POST['createAccountBtn']))
+    {
+      if (!($_POST['computingId'] == '' || $_POST['password'] == '' || $_POST['fName'] == '' || $_POST['lName'] == '' || $_POST['year'] == '')) {
+        createAccount($_POST['computingId'], $_POST['password'], $_POST['fName'], $_POST['lName'], $_POST['year']);
+        echo "<p> Account Created! </p>";
+      }
+    }
 }
 ?>
 
@@ -65,11 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         <form method="post" action="<?php $_SERVER['PHP_SELF'] ?>" onsubmit="return validateInput()">
             <div id="loginView" class="w-full max-w-xs md:max-w-sm p-6 bg-blue-300 border-2 border-black rounded-lg shadow-2xl">
                 <h1 class="text-white text-center text-3xl font-bold mb-8 pt-4">Sign Up</h1>
-                <form id="loginForm" class="space-y-6" onsubmit="handleFormSubmission(event)">
+                <form id="loginForm" class="space-y-6">
                     <div class="raised-element bg-blue-400 p-3 rounded-md">
                         <label for="computingId" class="sr-only">Computing ID</label>
                             <input type="text" 
                                 id="computingId" 
+                                name="computingId"
                                 placeholder="Computing ID" 
                                 required 
                                 class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
@@ -80,11 +88,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
                         <input 
                             type="password" 
                             id="password" 
+                            name="password" 
                             placeholder="Password" 
                             required 
                             class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
                         >
                     </div>
+                    <div class="raised-element bg-blue-400 p-3 rounded-md">
+                        <label for="fName" class="sr-only">First Name</label>
+                        <input 
+                            type="fName" 
+                            id="fName" 
+                            name="fName" 
+                            placeholder="First Name" 
+                            required 
+                            class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
+                        >
+                    </div>
+                    <div class="raised-element bg-blue-400 p-3 rounded-md">
+                        <label for="lName" class="sr-only">Last Name</label>
+                        <input 
+                            type="lName" 
+                            id="lName" 
+                            name="lName" 
+                            placeholder="Last Name" 
+                            required 
+                            class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
+                        >
+                    </div>
+                    <div class="raised-element bg-blue-400 p-3 rounded-md">
+                        <label for="year" class="sr-only">Year</label>
+                        <input 
+                            type="year" 
+                            id="year" 
+                            name="year" 
+                            placeholder="Year" 
+                            required 
+                            class="w-full bg-transparent text-center text-lg placeholder-white focus:outline-none text-white font-medium"
+                        >
+                    </div>                    
                     <form action="request.php" method="post">
                         <input type="submit" value="Create Account"
                             name="createAccountBtn" class="button-hover w-full raised-element bg-blue-500 text-white font-bold py-3 px-4 rounded-md text-xl tracking-wider transition-all duration-150"

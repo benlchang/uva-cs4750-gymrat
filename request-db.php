@@ -47,9 +47,44 @@ function getNameByID($user_id)
     return $result;
 }
 
-function getAllRequests()
+function createAccount($computingId, $password, $f_name, $l_name, $year)
 {
+    global $db;
+    $query = "INSERT INTO USERS (COMP_ID, PASSWORD, F_NAME, L_NAME, YEAR) VALUES (:computingId, :password, :f_name, :l_name, :year)";
+    try {
+        // bad way
+        $stmt = $db->prepare($query);
 
+        $stmt->bindParam(':computingId', $computingId);
+        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':f_name', $f_name);
+        $stmt->bindParam(':l_name', $l_name);
+        $stmt->bindParam(':year', $year);
+
+        $stmt->execute();
+        // good way
+        // $statement = $db->prepare($query);
+        // $statement->bindValue(':reqDate', $reqDate);
+        // $statement->bindValue(':roomNumber', $roomNumber);
+        // $statement->bindValue(':reqBy', $reqBy);
+        // $statement->bindValue(':repairDesc', $repairDesc);
+        // $statement->bindValue(':reqPriority', $reqPriority);
+        // $statement->execute();
+
+        $stmt->closeCursor();
+
+        // most likely, there should not be a problem adding a request since 
+        // a primary key of the table is auto_increment
+        // if ($statement->rowCount() == 0)
+        //     echo "Failed to add a request <br/>";
+    }
+    catch (PDOException $e) 
+    {
+        echo $e->getMessage();
+
+        // if there is a specific SQL-related error message
+        //    echo "generic message (don't reveal SQL-specific message)";
+    }
 }
 
 function getRequestById($id)  
