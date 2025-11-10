@@ -78,8 +78,13 @@ function createAccount($computingId, $password, $f_name, $l_name, $year)
         // $statement->bindValue(':reqPriority', $reqPriority);
         // $statement->execute();
 
-        $stmt->closeCursor();
+        $rowsInserted = $stmt->rowCount();
 
+        $stmt->closeCursor();
+        
+        if ($rowsInserted > 0) {
+            return 1;
+        }
         // most likely, there should not be a problem adding a request since 
         // a primary key of the table is auto_increment
         // if ($statement->rowCount() == 0)
