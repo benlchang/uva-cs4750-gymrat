@@ -3,29 +3,52 @@ function getAccount($computingId, $password)
 {
     global $db;
 
-    $query = "SELECT USER_ID FROM USERS WHERE COMP_ID = :computingId AND PASSWORD = :password";
+    $query = "SELECT USER_ID, `PASSWORD` AS stored_pw FROM USERS WHERE COMP_ID = :computingId";
 
     try {
-        $statement = $db->prepare($query);
+        $stmt = $db->prepare($query);
+        $stmt->bindValue(':computingId', $computingId);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
 
-        $statement->bindValue(':computingId', $computingId);
-        $statement->bindValue(':password', $password); 
+        if (!$row) {
+            return null;
+        }
 
-        $statement->execute();
+        $stored = $row['stored_pw'];
 
-        $result = $statement->fetchColumn(); 
+        // If stored value is a hash (password_verify will handle it)
+        if (password_verify($password, $stored)) {
+            // Optional: rehash if algorithm/settings changed
+            if (password_needs_rehash($stored, PASSWORD_DEFAULT)) {
+                $newHash = password_hash($password, PASSWORD_DEFAULT);
+                $u = $db->prepare("UPDATE USERS SET `PASSWORD` = :newHash WHERE USER_ID = :uid");
+                $u->bindValue(':newHash', $newHash);
+                $u->bindValue(':uid', $row['USER_ID'], PDO::PARAM_INT);
+                $u->execute();
+                $u->closeCursor();
+            }
+            return $row['USER_ID'];
+        }
 
-        $statement->closeCursor();
+        // Backwards-compatible: if DB stored plaintext, allow login and upgrade to hashed
+        if ($stored === $password) {
+            $newHash = password_hash($password, PASSWORD_DEFAULT);
+            $u = $db->prepare("UPDATE USERS SET `PASSWORD` = :newHash WHERE USER_ID = :uid");
+            $u->bindValue(':newHash', $newHash);
+            $u->bindValue(':uid', $row['USER_ID'], PDO::PARAM_INT);
+            $u->execute();
+            $u->closeCursor();
+            return $row['USER_ID'];
+        }
 
-        return $result; 
-
+        return null;
     }
-    catch (PDOException $e) 
-    {
+    catch (PDOException $e) {
+        // In dev show message; in production log it instead
         echo $e->getMessage();
-
-        // if there is a specific SQL-related error message
-        //    echo "generic message (don't reveal SQL-specific message)";
+        return null;
     }
 }
 
@@ -50,39 +73,38 @@ function getNameByID($user_id)
 function createAccount($computingId, $password, $f_name, $l_name, $year)
 {
     global $db;
-    $query = "
-        INSERT INTO USERS (COMP_ID, `PASSWORD`, F_NAME, L_NAME, YEAR)
-        SELECT :computingId, :password, :f_name, :l_name, :year
-        FROM DUAL
-        WHERE NOT EXISTS (
-            SELECT 1 FROM USERS WHERE COMP_ID = :computingId
-        )
-    ";    
+
     try {
-        // bad way
-        $stmt = $db->prepare($query);
+        // existence check
+        $check = $db->prepare("SELECT 1 FROM USERS WHERE COMP_ID = :computingId");
+        $check->bindValue(':computingId', $computingId);
+        $check->execute();
+        if ($check->fetch()) {
+            return 0; // already exists
+        }
+
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+        $stmt = $db->prepare("
+            INSERT INTO USERS (COMP_ID, `PASSWORD`, F_NAME, L_NAME, YEAR)
+            VALUES (:computingId, :password, :f_name, :l_name, :year)
+        ");
 
         $stmt->bindParam(':computingId', $computingId);
-        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':password', $hashed);
         $stmt->bindParam(':f_name', $f_name);
         $stmt->bindParam(':l_name', $l_name);
         $stmt->bindParam(':year', $year);
 
         $stmt->execute();
-
         $rowsInserted = $stmt->rowCount();
-
         $stmt->closeCursor();
-        
-        if ($rowsInserted > 0) {
-            return 1;
-        }
-    }
-    catch (PDOException $e) 
-    {
-        echo $e->getMessage();
 
-      
+        return ($rowsInserted > 0) ? 1 : 0;
+    }
+    catch (PDOException $e) {
+        echo $e->getMessage();
+        return 0;
     }
 }
 
