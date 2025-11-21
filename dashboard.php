@@ -27,6 +27,10 @@ if (isset($_SESSION['user_id']))
         $name = $_SESSION['user_id'];
     }
 }
+if (isset($_POST['createBtn'])) {
+    header('Location: createAccount.php');
+    exit; 
+}
 ?>
 
 
@@ -80,9 +84,9 @@ if (isset($_SESSION['user_id']))
             <nav class="lg:w-1/5">
                 <h2 class="text-xl font-bold page-text mb-4">Main Menu</h2>
                 <ul class="space-y-3 text-gray-500 font-medium">
-                    <li><a href="#" class="text-black font-extrabold text-xl border-b-2 border-black">Dashboard</a></li>
-                    <li><a href="#" class="hover:text-black">Log Workout</a></li>
-                    <li><a href="#" class="hover:text-black">Group Workout</a></li>
+                    <li><a href="dashboard.php" class="text-black font-extrabold text-xl border-b-2 border-black">Dashboard</a></li>
+                    <li><a href="logWorkout.php" class="hover:text-black">Log Workout</a></li>
+                    <li><a href="group.php" class="hover:text-black">Group Workout</a></li>
                     <li class="pt-4"><a href="login_form.html" class="text-red-500 hover:text-red-700">Logout</a></li>
                 </ul>
             </nav>
