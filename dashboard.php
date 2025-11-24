@@ -87,7 +87,7 @@ if (isset($_POST['createBtn'])) {
                     <li><a href="dashboard.php" class="text-black font-extrabold text-xl border-b-2 border-black">Dashboard</a></li>
                     <li><a href="logWorkout.php" class="hover:text-black">Log Workout</a></li>
                     <li><a href="group.php" class="hover:text-black">Group Workout</a></li>
-                    <li class="pt-4"><a href="login_form.html" class="text-red-500 hover:text-red-700">Logout</a></li>
+                    <li class="pt-4"><a href="login.php" class="text-red-500 hover:text-red-700">Logout</a></li>
                 </ul>
             </nav>
 

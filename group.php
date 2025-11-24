@@ -75,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h2 class="text-xl font-bold page-text mb-4">Main Menu</h2>
                 <ul class="space-y-3 text-gray-500 font-medium">
                     <li><a href="dashboard.php" class="hover:text-black">Dashboard</a></li>
-                    <li><a href="log_workout.php" class="hover:text-black">Log Workout</a></li>
-                    <li><a href="group_workout.php" class="text-black font-extrabold text-xl border-b-2 border-black">Group Workout</a></li>
+                    <li><a href="logWorkout.php" class="hover:text-black">Log Workout</a></li>
+                    <li><a href="group.php" class="text-black font-extrabold text-xl border-b-2 border-black">Group Workout</a></li>
                     <li class="pt-4"><a href="login.php" class="text-red-500 hover:text-red-700">Logout</a></li>
                 </ul>
             </nav>
