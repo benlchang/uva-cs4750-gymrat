@@ -38,6 +38,24 @@ if (isset($_POST['lookupWorkoutBtn'])) {
     }
 }
 
+if (isset($_POST['updateWorkoutBtn'])) {
+
+    if (!empty($_POST['sets']) && !empty($_POST['reps'])) {
+        foreach ($_POST['sets'] as $iid => $sets) {
+
+            $new_sets = intval($sets);
+            $new_reps = intval($_POST['reps'][$iid]);
+
+            updateStrengthExercise($iid, $new_sets, $new_reps);
+        }
+
+        $workout_message = "Workout updated!";
+    }
+
+    $workout_data = getWorkoutByDate($user_id, $selected_date);
+}
+
+
 # Leaderboard Data 
 $leaderboard = getLeaderboard($user_id);
 ?>
@@ -94,20 +112,49 @@ $leaderboard = getLeaderboard($user_id);
                 <?php endif; ?>
 
                 <?php if ($workout_data): ?>
-                    <div class="bg-white text-black p-4 rounded-md mt-4">
-                        <h3 class="text-xl font-bold mb-2">Workout for <?php echo $selected_date; ?></h3>
+                    <form method="POST">
+                        <input type="hidden" name="selected_date" value="<?php echo $selected_date; ?>">
 
-                        <?php foreach ($workout_data as $w): ?>
-                            <div class="border-b py-2">
-                                <p><strong><?php echo htmlspecialchars($w['exercise_name']); ?></strong></p>
-                                <p>Sets: <?php echo $w['SETS']; ?> | Reps: <?php echo $w['REPS']; ?></p>
-                                <?php if (isset($w['duration'])): ?>
-                                    <p>Duration: <?php echo $w['duration']; ?> min</p>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
+                        <div class="bg-white text-black p-4 rounded-md mt-4">
+                            <h3 class="text-xl font-bold mb-2">Workout for <?php echo $selected_date; ?></h3>
+
+                            <?php foreach ($workout_data as $w): ?>
+
+                                <?php $iid = isset($w['INSTANCE_ID']) ? $w['INSTANCE_ID'] : null; ?>
+
+                                <div class="border-b py-2">
+                                    <p><strong><?php echo htmlspecialchars($w['exercise_name']); ?></strong></p>
+
+                                    <p>
+                                        Sets:
+                                        <input 
+                                            type="number"
+                                            name="sets[<?php echo $iid; ?>]"
+                                            value="<?php echo $w['SETS']; ?>"
+                                            min="0"
+                                        >
+                                        |
+                                        Reps:
+                                        <input 
+                                            type="number"
+                                            name="reps[<?php echo $iid; ?>]"
+                                            value="<?php echo $w['REPS']; ?>"
+                                            min="0"
+                                        >
+                                    </p>
+
+                                </div>
+
+                            <?php endforeach; ?>
+
+
+                            <button type="submit" name="updateWorkoutBtn"
+                                class="mt-2 bg-blue-300 hover:bg-blue-400 text-black px-4 py-2 rounded-md">
+                                Update Workout
+                            </button>
+                        </div>
+                    </form>
+                    <?php endif; ?>
             </div>
 
             <!-- RIGHT SIDE COLUMN -->

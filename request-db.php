@@ -359,15 +359,7 @@ function addGroupMember($group_id, $comp_id) {
         $insert->bindParam(':group_id', $group_id);
         $insert->execute();
 
-        // Increment member count
-        $update = $db->prepare("
-            UPDATE WORKOUT_GROUP
-            SET NUMBER_OF_MEMBERS = NUMBER_OF_MEMBERS + 1
-            WHERE GROUP_ID = :group_id
-        ");
-        $update->bindParam(':group_id', $group_id);
-        $update->execute();
-
+       
         return "Successfully added '$comp_id' to group.";
     }
     catch (PDOException $e) {
@@ -508,6 +500,7 @@ function getWorkoutByDate($user_id, $date) {
 
     $query = "
         SELECT 
+            ei.INSTANCE_ID,
             et.EXERCISE_NAME AS exercise_name,
             s.SETS,
             s.REPS,
@@ -522,7 +515,7 @@ function getWorkoutByDate($user_id, $date) {
         LEFT JOIN STRENGTH s ON s.INSTANCE_ID = ei.INSTANCE_ID
         LEFT JOIN CARDIO c ON c.INSTANCE_ID = ei.INSTANCE_ID
         WHERE lw.USER_ID = :uid 
-          AND DATE(ws.DATE) = :d
+        AND DATE(ws.DATE) = :d
     ";
 
     $stmt = $db->prepare($query);
@@ -565,6 +558,20 @@ function getLeaderboard($user_id) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function updateStrengthExercise($instance_id, $sets, $reps) {
+    global $db;
 
+    $stmt = $db->prepare("
+        UPDATE STRENGTH
+        SET SETS = :sets, REPS = :reps
+        WHERE INSTANCE_ID = :iid
+    ;");
+
+    $stmt->bindValue(':sets', $sets, PDO::PARAM_INT);
+    $stmt->bindValue(':reps', $reps, PDO::PARAM_INT);
+    $stmt->bindValue(':iid', $instance_id, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
 
 ?>
