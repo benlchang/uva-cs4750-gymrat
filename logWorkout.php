@@ -238,7 +238,7 @@ if ($current_type == 'cardio' && $cardio_rows == 0) {
                 <ul class="space-y-3 text-gray-500 font-medium">
                     <li><a href="dashboard.php" class="hover:text-black">Dashboard</a></li>
                     <li><a href="logWorkout.php" class="text-black font-extrabold text-xl border-b-2 border-black">Log Workout</a></li>
-                    <li><a href="group_workout.php" class="hover:text-black">Group Workout</a></li>
+                    <li><a href="group.php" class="hover:text-black">Group Workout</a></li>
                     <li class="pt-4"><a href="login.php" class="text-red-500 hover:text-red-700">Logout</a></li>
                 </ul>
             </nav>

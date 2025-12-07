@@ -108,169 +108,19 @@ function createAccount($computingId, $password, $f_name, $l_name, $year)
     }
 }
 
-function getExerciseByName($name)
+function getRequestById($id)  
 {
-    global $db;
-    $query = "SELECT * FROM EXERCISE_TYPE WHERE EXERCISE_NAME LIKE :name";
 
-    $statement = $db->prepare($query);
-    $statement->bindValue(':name', "%" . $name . "%");
-    $statement->execute();
-    
-    // Return the associative array row
-    $result = $statement->fetchAll(PDO::FETCH_ASSOC); 
-    $statement->closeCursor();
-    
-    return $result;
 }
 
-function createExercise($exercise_name)
+function updateRequest($reqId, $reqDate, $roomNumber, $reqBy, $repairDesc, $reqPriority)
 {
-    global $db;
-    $formatted_name = ucwords(strtolower(trim($exercise_name)));
-    try {
-        $check = $db->prepare("SELECT 1 FROM EXERCISE_TYPE WHERE EXERCISE_NAME Like :formatted_name");
-        $check->bindValue(':formatted_name', $formatted_name);
-        $check->execute();
-        if ($check->fetch()) {
-            return 0; // already exists
-        }
-        $stmt = $db->prepare("
-            INSERT INTO EXERCISE_TYPE (EXERCISE_NAME)
-            VALUES (:formatted_name)
-        ");
-
-        $stmt->bindParam(':formatted_name', $formatted_name);
-
-        $stmt->execute();
-        $rowsInserted = $stmt->rowCount();
-        $stmt->closeCursor();
-
-        return ($rowsInserted > 0) ? 1 : 0;
-    }
-    catch (PDOException $e) {
-        echo $e->getMessage();
-        return 0;
-    }
+    
 }
 
-function createStrengthExerciseInstance($exercise_name, $date, $sets, $reps, $weight) {
-    global $db;
-    try {
-        $query = $db->prepare("
-            INSERT INTO EXERCISE_INSTANCE (EXERCISE_ID, DATE)
-            SELECT ET.EXERCISE_ID, :date
-            FROM EXERCISE_TYPE ET
-            WHERE ET.EXERCISE_NAME LIKE :exercise_name
-        ");
-        $query->bindParam(':exercise_name', $exercise_name);
-        $query->bindParam(':date', $date);
-        $query->execute();
+function deleteRequest($reqId)
+{
 
-        //The command lastInsertId() was identified by gemini
-        $instance_id = $db->lastInsertId();
-
-        $query->closeCursor();
-        
-        
-
-        $query2 = $db->prepare("
-            INSERT INTO STRENGTH (INSTANCE_ID, WEIGHT, SETS, REPS)
-            VALUES (:instance_id, :weight, :sets, :reps)
-            ");
-        $query2->bindParam(':instance_id', $instance_id);
-        $query2->bindParam(':weight', $weight);
-        $query2->bindParam(':sets', $sets);
-        $query2->bindParam(':reps', $reps);
-        $query2->execute();
-        $query2->closeCursor();
-        return $instance_id;
-    }
-    catch (PDOException $e) {
-        echo $e->getMessage();
-        return 0;
-    }
 }
-
-function createCardioExerciseInstance($exercise_name, $date, $distance, $duration) {
-    global $db;
-    try {
-        $query = $db->prepare("
-            INSERT INTO EXERCISE_INSTANCE (EXERCISE_ID, DATE)
-            SELECT ET.EXERCISE_ID, :date
-            FROM EXERCISE_TYPE ET
-            WHERE ET.EXERCISE_NAME LIKE :exercise_name
-        ");
-        $query->bindParam(':exercise_name', $exercise_name);
-        $query->bindParam(':date', $date);
-        $query->execute();
-
-        //The command lastInsertId() was identified by gemini
-        $instance_id = $db->lastInsertId();
-
-        $query->closeCursor();
-        
-        
-
-        $query2 = $db->prepare("
-            INSERT INTO CARDIO (INSTANCE_ID, DISTANCE, DURATION)
-            VALUES (:instance_id, :distance, :duration)
-            ");
-        $query2->bindParam(':instance_id', $instance_id);
-        $query2->bindParam(':distance', $distance);
-        $query2->bindParam(':duration', $duration);
-        $query2->execute();
-        $query2->closeCursor();
-        return $instance_id;
-    }
-    catch (PDOException $e) {
-        echo $e->getMessage();
-        return 0;
-    }
-}
-
-function logWorkout($date, $location, $instance_list, $user_id) {
-    global $db;
-    try {
-        $query = $db->prepare("
-            INSERT INTO WORKOUT_SESSION (DATE, LOCATION)
-            VALUES (:date, :location)
-        ");
-        $query->bindParam(':date', $date);
-        $query->bindParam(':location', $location);
-        $query->execute();
-
-        //The command lastInsertId() was identified by gemini
-        $session_id = $db->lastInsertId();
-
-        $query->closeCursor();
-
-        foreach ($instance_list as $instance_id) {
-            $query2 = $db->prepare("
-                INSERT INTO HAS (INSTANCE_ID, SESSION_ID)
-                VALUES (:instance_id, :session_id)
-                ");
-            $query2->bindParam(':session_id', $session_id);
-            $query2->bindParam('instance_id', $instance_id);
-            $query2->execute();
-            $query2->closeCursor();
-        }
-        $query = $db->prepare("
-            INSERT INTO LOG_WORKOUT (USER_ID, SESSION_ID)
-            VALUES (:user_id, :session_id)
-        ");
-        $query->bindParam(':user_id', $user_id);
-        $query->bindParam(':session_id', $session_id);
-        $query->execute();
-        $query->closeCursor();
-
-        return;
-    }
-    catch (PDOException $e) {
-        echo $e->getMessage();
-        return 0;
-    }
-}
-
 
 ?>
