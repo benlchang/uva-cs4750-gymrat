@@ -15,7 +15,7 @@ require('request-db.php');
 
 <?php 
 session_start();
-$confirmation_message = ''; // Initialize a variable to hold the confirmation text
+$confirmation_message = '';
 $account_id = null;
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  
 {
@@ -25,7 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
             $_SESSION['user_id'] = $account_id;
             header('Location: dashboard.php');
         }
-        exit; 
+        else {
+            $confirmation_message = "Error, Computing ID and Password Do Not Match";
+        }
     }
     if (isset($_POST['createBtn'])) {
         header('Location: createAccount.php');
@@ -74,6 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 <body class="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
     <div class="w-full max-w-xs md:max-w-sm p-6 bg-blue-300 border-2 border-black rounded-lg shadow-2xl">
         <form method="post" action="<?php $_SERVER['PHP_SELF'] ?>" onsubmit="return validateInput()">
+                <?php if (!empty($confirmation_message)): ?>
+                    <div class="mb-4 text-center text-sm font-bold">
+                        <?php echo $confirmation_message; ?>
+                    </div>
+                <?php endif; ?>
             <div id="loginView" class="w-full max-w-xs md:max-w-sm p-6 bg-blue-300 border-2 border-black rounded-lg shadow-2xl">
                 <h1 class="text-white text-center text-3xl font-bold mb-8 pt-4">Login</h1>
                 <form id="loginForm" class="space-y-6">
